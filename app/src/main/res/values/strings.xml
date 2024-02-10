@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CGPA Calculator</string>
+    <string name="title_activity_gpa">Gpa</string>
+    <string name="title_activity_cgpa">CGpa</string>
+    <string name="title_activity_new">newActivity</string>
+    <string name="title_activity_individualsubject">individualsubject</string>
+</resources>
