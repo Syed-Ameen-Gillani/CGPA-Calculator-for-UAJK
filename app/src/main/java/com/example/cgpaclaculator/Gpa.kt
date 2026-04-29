@@ -45,14 +45,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.cgpaclaculator.ui.theme.Black
-import com.example.cgpaclaculator.ui.theme.Blackgradient
-import com.example.cgpaclaculator.ui.theme.BlueGray
 import com.example.cgpaclaculator.ui.theme.CGPAclaculatorTheme
-import com.example.cgpaclaculator.ui.theme.Whitegradient
-import com.example.cgpaclaculator.ui.theme.anotherGradient
-import com.example.cgpaclaculator.ui.theme.buttonColor
-import com.example.cgpaclaculator.ui.theme.orange
+import com.example.cgpaclaculator.ui.theme.DarkGradient
+import com.example.cgpaclaculator.ui.theme.LightGradient
 class Gpa : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,13 +59,17 @@ class Gpa : ComponentActivity() {
     }
 }
 @Composable
-fun Screen1(context:Context){
+fun Screen1(context: Context) {
     Surface {
-        val uiColor = if (isSystemInDarkTheme()) Color.White else Black
-        var openDialog = remember{
-            mutableStateOf(false)
-        }
-        var calculatedCGPA1 by rememberSaveable { mutableStateOf(0.0,) }
+        val isDark = isSystemInDarkTheme()
+        val backgroundBrush = if (isDark) DarkGradient else LightGradient
+        val borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        val buttonColor = MaterialTheme.colorScheme.primary
+        val buttonContentColor = MaterialTheme.colorScheme.onPrimary
+        val uiColor = MaterialTheme.colorScheme.onBackground
+
+        var openDialog by rememberSaveable { mutableStateOf(false) }
+        var calculatedCGPA1 by rememberSaveable { mutableStateOf(0.0) }
         var totalCreditHours1 by rememberSaveable { mutableStateOf(0) }
         var totalGrades1 by rememberSaveable { mutableStateOf("") }
 
@@ -110,7 +109,7 @@ fun Screen1(context:Context){
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(if (isSystemInDarkTheme()) Blackgradient else Whitegradient)
+                .background(backgroundBrush)
                 .verticalScroll(rememberScrollState()).padding(0.dp,16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -145,34 +144,35 @@ fun Screen1(context:Context){
             Spacer(modifier = Modifier.height(80.dp))
            Column (Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally){
                Row(horizontalArrangement = Arrangement.Center){
-                   Button(onClick = {
-                       calculatedCGPA1= calculateCGPA(
-                           listOf(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, grade9,grade10),
-                           listOf(credit1, credit2, credit3, credit4, credit5, credit6, credit7, credit8, credit9, credit10)
-                       ).first
-                       totalCreditHours1=calculateCGPA(
-                           listOf(grade1, grade2, grade3, grade4, grade5, grade6,grade7,grade8,grade9,grade10),
-                           listOf(credit1, credit2, credit3, credit4, credit5, credit6, credit7, credit8, credit9, credit10)
-                       ).second
-                       totalGrades1 = OverAllGrades(calculatedCGPA1)
-                       // Reset individual subject values
+                   Button(
+                       onClick = {
+                           val (calculatedValue, creditTotal) = calculateCGPA(
+                               listOf(grade1, grade2, grade3, grade4, grade5, grade6, grade7, grade8, grade9, grade10),
+                               listOf(credit1, credit2, credit3, credit4, credit5, credit6, credit7, credit8, credit9, credit10)
+                           )
+                           calculatedCGPA1 = calculatedValue
+                           totalCreditHours1 = creditTotal
+                           totalGrades1 = OverAllGrades(calculatedCGPA1)
 
-
-                       openDialog.value = true},  modifier = Modifier
-                       .clip(
-                           RoundedCornerShape(32.dp)).border(4.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)
-                       ),
+                           openDialog = true
+                       },
+                       modifier = Modifier
+                           .clip(RoundedCornerShape(32.dp))
+                           .border(4.dp, borderColor, RoundedCornerShape(32.dp)),
                        colors = ButtonDefaults.buttonColors(
-                           containerColor = if (isSystemInDarkTheme()) BlueGray else buttonColor
-                       )) {
-                       Text(text = "Calculate",color = Color.White)
+                           containerColor = buttonColor,
+                           contentColor = buttonContentColor
+                       )
+                   ) {
+                       Text(text = "Calculate", color = buttonContentColor)
                    }
-                   if (openDialog.value){
-                      AlertDialog(onDismissRequest = { openDialog.value = false },
-                          containerColor = if (isSystemInDarkTheme()) Black else Color.White,
-                          textContentColor = uiColor,
-                          modifier = Modifier.border(3.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)),
-                          confirmButton = {
+                   if (openDialog) {
+                       AlertDialog(
+                           onDismissRequest = { openDialog = false },
+                           containerColor = MaterialTheme.colorScheme.surface,
+                           textContentColor = MaterialTheme.colorScheme.onSurface,
+                           modifier = Modifier.border(3.dp, borderColor, RoundedCornerShape(32.dp)),
+                           confirmButton = {
                               TextField(
                                   value = "$calculatedCGPA1",
                                   onValueChange = {},
@@ -209,16 +209,18 @@ fun Screen1(context:Context){
                                   )
                               )
 
-                              Button(onClick = {openDialog.value = false
-                              },
+                              Button(
+                                  onClick = { openDialog = false },
                                   colors = ButtonDefaults.buttonColors(
-                                      containerColor = if (isSystemInDarkTheme()) BlueGray else buttonColor),
+                                      containerColor = buttonColor,
+                                      contentColor = buttonContentColor
+                                  ),
                                   modifier = Modifier
-                                  .clip(
-                                      RoundedCornerShape(32.dp)).border(4.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)
-                                  )) {
+                                      .clip(RoundedCornerShape(32.dp))
+                                      .border(width = 4.dp, color = borderColor, shape = RoundedCornerShape(32.dp))
+                              ) {
 
-                                  Text(text = "Back", color = Color.White)
+                                  Text(text = "Back", color = buttonContentColor)
                               }
 
                           })
@@ -249,11 +251,11 @@ fun Screen1(context:Context){
 
                        )
                    },  modifier = Modifier
-                       .clip(
-                           RoundedCornerShape(32.dp)).border(4.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)
-                       ),
+                       .clip(RoundedCornerShape(32.dp))
+                       .border(4.dp, borderColor, RoundedCornerShape(32.dp)),
+
                        colors = ButtonDefaults.buttonColors(
-                           containerColor = if (isSystemInDarkTheme()) BlueGray else buttonColor
+                           containerColor = buttonColor
                        )) {
                        Text(text = "Reset", color = Color.White)
                    }
@@ -326,35 +328,30 @@ fun subjectSection1(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropDownList2(credit:MutableState<Int?>, items:List<Int>) {
-    var color = if (isSystemInDarkTheme()) Color.White else Black
-    var isExpended  = rememberSaveable{
-        mutableStateOf(false)
-    }
+fun DropDownList2(credit: MutableState<Int?>, items: List<Int>) {
+    val colorScheme = MaterialTheme.colorScheme
+    var isExpended = rememberSaveable { mutableStateOf(false) }
     ExposedDropdownMenuBox(
         expanded = isExpended.value,
-        onExpandedChange = { isExpended.value = it
-        }
+        onExpandedChange = { isExpended.value = it }
     ) {
         TextField(
-            keyboardOptions = KeyboardOptions(
-
-            ),
+            keyboardOptions = KeyboardOptions(),
             enabled = false,
-            value = if(credit.value==null) "credit Hours" else credit.value.toString(),
-            onValueChange = {credit.value = it.toIntOrNull()},
+            value = if (credit.value == null) "Credit Hours" else credit.value.toString(),
+            onValueChange = { credit.value = it.toIntOrNull() },
             readOnly = true,
             shape = RoundedCornerShape(50.dp),
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpended.value)
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
-                disabledTextColor = Color.White,
-                disabledTrailingIconColor = Color.White,
-                focusedTrailingIconColor = BlueGray,
-                disabledContainerColor = if (isSystemInDarkTheme()) BlueGray else orange,
+                disabledTextColor = colorScheme.onSurface,
+                disabledTrailingIconColor = colorScheme.onSurface,
+                focusedTrailingIconColor = colorScheme.primary,
+                disabledContainerColor = colorScheme.primary.copy(alpha = 0.15f),
                 disabledIndicatorColor = Color.Transparent,
-                disabledPlaceholderColor = Color.White
+                disabledPlaceholderColor = colorScheme.onSurface
             ),
             modifier = Modifier
                 .menuAnchor()

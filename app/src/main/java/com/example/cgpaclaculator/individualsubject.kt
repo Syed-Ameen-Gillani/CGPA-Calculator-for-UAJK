@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -34,14 +35,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.cgpaclaculator.ui.theme.Black
-import com.example.cgpaclaculator.ui.theme.Blackgradient
-import com.example.cgpaclaculator.ui.theme.BlueGray
 import com.example.cgpaclaculator.ui.theme.CGPAclaculatorTheme
-import com.example.cgpaclaculator.ui.theme.Whitegradient
-import com.example.cgpaclaculator.ui.theme.anotherGradient
-import com.example.cgpaclaculator.ui.theme.buttonColor
-import com.example.cgpaclaculator.ui.theme.orange
+import com.example.cgpaclaculator.ui.theme.DarkGradient
+import com.example.cgpaclaculator.ui.theme.LightGradient
 
 class individualsubject : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,73 +51,71 @@ class individualsubject : ComponentActivity() {
 }
 @Preview
 @Composable
-fun individualSubject()
-{
-   Surface {
-       var Marks = rememberSaveable { mutableStateOf<Int?>(null) }
-       var Credit = rememberSaveable { mutableStateOf<Int?>(null) }
-       var TotalMarks = rememberSaveable { mutableStateOf(0) }
-       var Gpa = rememberSaveable { mutableStateOf(0.0) }
-       var percentage = rememberSaveable { mutableStateOf(0.0) }
-       val uiColor = if (isSystemInDarkTheme()) Color.White else Black
-       Column(
-           horizontalAlignment = Alignment.CenterHorizontally,
-           verticalArrangement = Arrangement.Center,
-           modifier = Modifier
-               .fillMaxSize()
-               .background(if (isSystemInDarkTheme()) Blackgradient else Whitegradient)
-       ){
-           SubjectSection3(Marks, Credit , items)
-           Spacer(modifier = Modifier.height(30.dp))
-           Row {
-               Button(onClick = {
-                    TotalMarks.value = getTotalMarks(Credit)
-                   percentage.value = Percentage(Marks,TotalMarks)
-                   Gpa.value= GpaCalculator(percentage)
-               }, colors = ButtonDefaults.buttonColors(
-                   containerColor = if (isSystemInDarkTheme()) BlueGray else buttonColor.copy(alpha = .9f),
-                   contentColor = Color.White
-               ),
-                   modifier = Modifier
-                       .clip(
-                           RoundedCornerShape(32.dp)
-                       )
-                       .border(
-                           4.dp,
-                           if (isSystemInDarkTheme()) Whitegradient else anotherGradient,
-                           RoundedCornerShape(32.dp)
-                       )) {
-                   Text(text = "Calculate")
-               }
-               Spacer(modifier = Modifier.padding(4.dp))
-               Button(onClick = {
-                   reset(Marks, Credit, TotalMarks, Gpa, percentage)
-               }, colors = ButtonDefaults.buttonColors(
-                   containerColor = if (isSystemInDarkTheme()) BlueGray else buttonColor.copy(alpha = .9f),
-                   contentColor = Color.White
-               ),
-                   modifier = Modifier
-                       .clip(
-                           RoundedCornerShape(32.dp)
-                       )
-                       .border(
-                           4.dp,
-                           if (isSystemInDarkTheme()) Whitegradient else anotherGradient,
-                           RoundedCornerShape(32.dp)
-                       )) {
-                   Text(text = "Reset")
-               }
-           }
-           Spacer(modifier = Modifier.height(30.dp))
-           Row(modifier = Modifier.align(Alignment.CenterHorizontally)){
-               TextFields(label = "percentage", parameter = percentage)
-               Spacer(modifier = Modifier.padding(20.dp))
-               TextFields(label = "GPA", parameter = Gpa)
-           }
+fun individualSubject() {
+    Surface {
+        val isDark = isSystemInDarkTheme()
+        val backgroundBrush = if (isDark) DarkGradient else LightGradient
+        val borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
+        val buttonColor = MaterialTheme.colorScheme.primary
+        val buttonContentColor = MaterialTheme.colorScheme.onPrimary
+        val uiColor = MaterialTheme.colorScheme.onBackground
 
+        var Marks = rememberSaveable { mutableStateOf<Int?>(null) }
+        var Credit = rememberSaveable { mutableStateOf<Int?>(null) }
+        var TotalMarks = rememberSaveable { mutableStateOf(0) }
+        var Gpa = rememberSaveable { mutableStateOf(0.0) }
+        var percentage = rememberSaveable { mutableStateOf(0.0) }
 
-       }
-   }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundBrush)
+        ) {
+            SubjectSection3(Marks, Credit, items)
+            Spacer(modifier = Modifier.height(30.dp))
+            Row {
+                Button(
+                    onClick = {
+                        TotalMarks.value = getTotalMarks(Credit)
+                        percentage.value = Percentage(Marks, TotalMarks)
+                        Gpa.value = GpaCalculator(percentage)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = buttonContentColor
+                    ),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(32.dp))
+                        .border(width = 4.dp, color = borderColor, shape = RoundedCornerShape(32.dp))
+                ) {
+                    Text(text = "Calculate", color = buttonContentColor)
+                }
+                Spacer(modifier = Modifier.padding(4.dp))
+                Button(
+                    onClick = {
+                        reset(Marks, Credit, TotalMarks, Gpa, percentage)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = buttonColor,
+                        contentColor = buttonContentColor
+                    ),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(32.dp))
+                        .border(width = 4.dp, color = borderColor, shape = RoundedCornerShape(32.dp))
+                ) {
+                    Text(text = "Reset", color = buttonContentColor)
+                }
+            }
+            Spacer(modifier = Modifier.height(30.dp))
+            Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                TextFields(label = "percentage", parameter = percentage)
+                Spacer(modifier = Modifier.padding(20.dp))
+                TextFields(label = "GPA", parameter = Gpa)
+            }
+        }
+    }
 }
 
 @Composable
@@ -129,21 +123,16 @@ fun SubjectSection3(
     Marks: MutableState<Int?>,
     Credit: MutableState<Int?>,
     item: List<Int>,
-)
-{
-    var uiColor = if(isSystemInDarkTheme()) Color.White else Black
+) {
+    val uiColor = MaterialTheme.colorScheme.onBackground
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally){
-        Column(horizontalAlignment = Alignment.CenterHorizontally){
-        }
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(20.dp))
-        Row(modifier = Modifier.align(Alignment.CenterHorizontally)){
+        Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
             MarksScreen(Marks)
             Spacer(modifier = Modifier.padding(20.dp))
             DropDownList2(Credit, item)
         }
-
-
     }
 }
 
@@ -167,18 +156,18 @@ fun MarksScreen(Marks: MutableState<Int?>) {
         readOnly = false,
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = if (isSystemInDarkTheme()) BlueGray else orange,
-            focusedContainerColor = if (isSystemInDarkTheme()) BlueGray else orange,
-            focusedTextColor = Color.White,
-            unfocusedTextColor = Color.White,
-            unfocusedLabelColor = Color.White,
-            focusedLabelColor = Color.White,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+            focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+            focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            focusedLabelColor = MaterialTheme.colorScheme.onPrimary,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            disabledTrailingIconColor = Color.White,
-            focusedTrailingIconColor = BlueGray,
-            unfocusedTrailingIconColor = Color.White,
-            cursorColor = Color.White
+            disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.onSurface
         )
     )
 }
@@ -244,30 +233,29 @@ fun getTotalMarks(Credit: MutableState<Int?>):Int {
 }
 
 @Composable
-fun TextFields(label:String, parameter:MutableState<Double>)
-{
-    TextField(
-        keyboardOptions = KeyboardOptions(
+fun TextFields(label: String, parameter: MutableState<Double>) {
+    val colorScheme = MaterialTheme.colorScheme
 
-        ),
+    TextField(
+        keyboardOptions = KeyboardOptions(),
         enabled = false,
         label = {
-            Text(text = label, color = Color.White)
+            Text(text = label, color = colorScheme.onSurface)
         },
         value = parameter.value.toString(),
         onValueChange = {},
         readOnly = true,
         shape = RoundedCornerShape(50.dp),
-        trailingIcon = {
-        },
+        trailingIcon = {},
         colors = TextFieldDefaults.colors(
-            disabledTextColor = Color.White,
-            disabledTrailingIconColor = Color.White,
-            focusedTrailingIconColor = BlueGray,
-            disabledContainerColor = if (isSystemInDarkTheme()) BlueGray else orange,
+            disabledTextColor = colorScheme.onSurface,
+            disabledTrailingIconColor = colorScheme.onSurface,
+            focusedTrailingIconColor = colorScheme.primary,
+            disabledContainerColor = colorScheme.primary.copy(alpha = 0.15f),
             disabledIndicatorColor = Color.Transparent,
-            disabledPlaceholderColor = Color.White
-        ), modifier = Modifier
+            disabledPlaceholderColor = colorScheme.onSurface
+        ),
+        modifier = Modifier
             .width(140.dp)
             .height(50.dp)
     )

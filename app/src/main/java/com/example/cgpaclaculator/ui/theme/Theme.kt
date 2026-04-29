@@ -17,30 +17,31 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BlueGray,
-    surface = Color.Gray
+    primary = TrackerPrimary,
+    onPrimary = Color.White,
+    secondary = TrackerPrimary,
+    onSecondary = Color.White,
+    background = Color(0xFF111827),
+    onBackground = Color.White,
+    surface = Color(0xFF1F2937),
+    onSurface = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Black,
-    surface = Color.White
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+    primary = TrackerPrimary,
     onPrimary = Color.White,
+    secondary = TrackerPrimary,
     onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+    background = TrackerBackground,
+    onBackground = TrackerOnSurface,
+    surface = TrackerSurface,
+    onSurface = TrackerOnSurface
 )
 
 @Composable
 fun CGPAclaculatorTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -55,9 +56,12 @@ fun CGPAclaculatorTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            val window = (view.context as? Activity)?.window
+            if (window != null) {
+                // Ensure status bar is always the primary blue branding
+                window.statusBarColor = TrackerPrimary.toArgb()
+                WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            }
         }
     }
 

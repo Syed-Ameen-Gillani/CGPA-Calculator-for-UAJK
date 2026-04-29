@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.CGPAclaculator" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.CGPAclaculator" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Splash screen -->
+        <item name="android:windowSplashScreenBackground">@color/education_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenAnimationDuration">300</item>
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+
+        <!-- Status/navigation bar coloring -->
+        <item name="android:statusBarColor">@color/education_primary</item>
+        <item name="android:navigationBarColor">@color/education_primary</item>
+    </style>
 </resources>

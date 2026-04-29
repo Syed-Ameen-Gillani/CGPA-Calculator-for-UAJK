@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color that matches the education theme -->
+    <item android:drawable="@color/education_background" />
+
+    <!-- Centered logo with safety padding -->
+    <item
+        android:top="48dp"
+        android:bottom="48dp"
+        android:left="48dp"
+        android:right="48dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/app_icon" />
+    </item>
+</layer-list>

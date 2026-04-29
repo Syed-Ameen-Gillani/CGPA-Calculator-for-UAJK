@@ -1,126 +1,140 @@
 package com.example.cgpaclaculator
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
-import com.example.cgpaclaculator.ui.theme.Black
-import com.example.cgpaclaculator.ui.theme.Blackgradient
-import com.example.cgpaclaculator.ui.theme.BlueGray
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.*
+import androidx.navigation.navArgument
+import com.example.cgpaclaculator.data.HistoryItem
+import com.example.cgpaclaculator.data.UserDataManager
+import com.example.cgpaclaculator.data.UserProfile
+import com.example.cgpaclaculator.ui.screens.*
 import com.example.cgpaclaculator.ui.theme.CGPAclaculatorTheme
-import com.example.cgpaclaculator.ui.theme.LightBlue
-import com.example.cgpaclaculator.ui.theme.Whitegradient
-import com.example.cgpaclaculator.ui.theme.anotherGradient
-import com.example.cgpaclaculator.ui.theme.orange
-import kotlin.jvm.java
-import kotlin.jvm.java as java1
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CGPAclaculatorTheme {
-                LoginScreen(context = this)
+                AppNavigation()
             }
         }
     }
 }
+
+sealed class Screen(val route: String) {
+    object Onboarding : Screen("onboarding")
+    object Dashboard : Screen("dashboard")
+    object AddResult : Screen("add_result")
+    object Cgpa : Screen("cgpa")
+    object Conversion : Screen("conversion")
+    object History : Screen("history")
+}
+
 @Composable
-fun LoginScreen(context: Context)
-{
-    Surface {
-        val uiColor = if (isSystemInDarkTheme()) Color.White else Black
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(if (isSystemInDarkTheme()) Blackgradient else Whitegradient)
-        ){
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(.8f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Button(onClick = {
-                    val intent = Intent(context,CGpa::class.java1)
-                    context.startActivity(intent)
+fun AppNavigation() {
+    val context = LocalContext.current
+    val dataManager = remember { UserDataManager(context) }
+    val profile = remember { mutableStateOf(dataManager.getProfile()) }
+    
+    val navController = rememberNavController()
+    
+    val startDestination = if (profile.value.name.isBlank()) {
+        Screen.Onboarding.route
+    } else {
+        Screen.Dashboard.route
+    }
+    
+    NavHost(
+        navController = navController,
+        startDestination = startDestination
+    ) {
+        composable(Screen.Onboarding.route) {
+            OnboardingScreen(
+                onComplete = { name, dept ->
+                    dataManager.saveProfile(UserProfile(name, dept))
+                    profile.value = dataManager.getProfile()
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
                 },
-                    modifier = Modifier.border(3.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSystemInDarkTheme()) BlueGray else orange,
-                        contentColor = if (isSystemInDarkTheme()) LightBlue else LightBlue
-                    )) {
-                    Text(text = "CGPA", style = MaterialTheme.typography.headlineLarge)
-                }
-                Spacer(modifier = Modifier.padding(10.dp))
-                Button(onClick = {
-                    val intent = Intent(context,Gpa::class.java1)
-                    context.startActivity(intent)
+                onBack = if (navController.previousBackStackEntry != null) {
+                    { navController.popBackStack() }
+                } else null,
+                initialName = profile.value.name,
+                initialDept = profile.value.department
+            )
+        }
+        composable(Screen.Dashboard.route) {
+            val history = dataManager.getHistory()
+            val latestCgpa = history
+                .filter { it.type == "CGPA" }
+                .lastOrNull()?.result?.toDoubleOrNull() ?: 0.0
+                
+            DashboardScreen(
+                profile = profile.value,
+                latestCgpa = latestCgpa,
+                onAddResult = { navController.navigate(Screen.AddResult.route) },
+                onViewHistory = { navController.navigate(Screen.History.route) },
+                onSwitchDept = {
+                    navController.navigate(Screen.Onboarding.route)
                 },
-                    modifier = Modifier.border(3.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSystemInDarkTheme()) BlueGray else orange,
-                        contentColor = if (isSystemInDarkTheme()) LightBlue else LightBlue
-                    )) {
-                    Text(text = "Semester GPA", style = MaterialTheme.typography.headlineLarge, )
+                onCalculateCgpa = { navController.navigate(Screen.Cgpa.route) },
+                onConversion = { gpaMode ->
+                    navController.navigate("${Screen.Conversion.route}?gpaMode=$gpaMode")
                 }
-
-                Spacer(modifier = Modifier.padding(10.dp))
-                Button(onClick = {
-                    val intent = Intent(context,individualsubject::class.java1)
-                    context.startActivity(intent)
-                },
-                    modifier = Modifier.border(3.dp, if (isSystemInDarkTheme()) Whitegradient else anotherGradient, RoundedCornerShape(32.dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSystemInDarkTheme()) BlueGray else orange,
-                        contentColor = if (isSystemInDarkTheme()) LightBlue else LightBlue
-                    )) {
-                    Text(text = "Subject GPA", style = MaterialTheme.typography.headlineLarge)
+            )
+        }
+        composable(Screen.AddResult.route) {
+            AddResultScreen(
+                onBack = { navController.popBackStack() },
+                onSave = { title, result, type ->
+                    val history = dataManager.getHistory().toMutableList()
+                    history.add(HistoryItem(title, result, java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date()), type))
+                    dataManager.saveHistory(history)
                 }
-
-            }
-            Column(modifier = Modifier.align(Alignment.BottomCenter).padding(0.dp,20.dp)){
-                Text(
-                    text = "Developed by Syed Ameen Gillani",
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Color.Gray
-                )
-            }
-
+            )
+        }
+        composable(Screen.Cgpa.route) {
+            CgpaCalculatorScreen(
+                onBack = { navController.popBackStack() },
+                onSave = { title, result, type ->
+                    val history = dataManager.getHistory().toMutableList()
+                    history.add(
+                        HistoryItem(
+                            title,
+                            result,
+                            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date()),
+                            type
+                        )
+                    )
+                    dataManager.saveHistory(history)
+                }
+            )
+        }
+        composable(
+            route = "${Screen.Conversion.route}?gpaMode={gpaMode}",
+            arguments = listOf(
+                navArgument("gpaMode") { defaultValue = "false" }
+            )
+        ) { backStackEntry ->
+            val gpaMode = backStackEntry.arguments?.getString("gpaMode") == "true"
+            ConversionScreen(
+                onBack = { navController.popBackStack() },
+                startWithGpaToMarks = gpaMode
+            )
+        }
+        composable(Screen.History.route) {
+            val history = dataManager.getHistory()
+            HistoryScreen(
+                history = history,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
-
-
-
-
-
-
