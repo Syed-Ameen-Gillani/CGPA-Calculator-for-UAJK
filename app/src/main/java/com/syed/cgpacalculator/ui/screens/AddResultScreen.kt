@@ -147,7 +147,7 @@ fun AddResultScreen(
                         modifier = Modifier.padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Semester GPA", style = MaterialTheme.typography.bodyMedium)
+                        
                         Text(
                             text = String.format("%.2f", calculatedGpa),
                             style = MaterialTheme.typography.displaySmall,

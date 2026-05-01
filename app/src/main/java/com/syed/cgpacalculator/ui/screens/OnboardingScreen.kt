@@ -160,15 +160,7 @@ fun OnboardingScreen(
                     Text("Privacy Policy", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "Developed by Syed Ameen Gillani",
-                    color = Color.White.copy(alpha = 0.5f),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Light,
-                     modifier = Modifier.padding(bottom = 16.dp)
-                )
+                
             }
         }
     }

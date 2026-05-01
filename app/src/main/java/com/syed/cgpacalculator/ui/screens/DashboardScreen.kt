@@ -159,11 +159,14 @@ fun DashboardScreen(
                     Text("View Saved History", color = TrackerPrimary, fontWeight = FontWeight.SemiBold)
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                TextButton(onClick = onViewPrivacyPolicy) {
-                    Text("Privacy Policy", color = Color.Gray, fontSize = 12.sp)
-                }
+                Text(
+                    text = "Developed by Syed Ameen Gillani",
+                    color = Color.Gray,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Light
+                )
             }
         }
     }

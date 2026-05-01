@@ -127,7 +127,7 @@ fun CgpaCalculatorScreen(
                         modifier = Modifier.padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("Cumulative GPA (CGPA)", style = MaterialTheme.typography.bodyMedium)
+                    
                         Text(
                             text = String.format("%.2f", calculatedCgpa),
                             style = MaterialTheme.typography.displaySmall,

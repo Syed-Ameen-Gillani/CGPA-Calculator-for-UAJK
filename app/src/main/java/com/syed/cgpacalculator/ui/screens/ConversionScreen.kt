@@ -123,7 +123,7 @@ fun ConversionScreen(
                                         fontWeight = FontWeight.Bold,
                                         color = TrackerPrimary
                                     )
-                                    Text("out of ${CalculationLogic.getTotalMarks(creditHours.toInt())}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                    
                                 }
                             }
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
