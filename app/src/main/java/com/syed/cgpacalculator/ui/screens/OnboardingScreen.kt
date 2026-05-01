@@ -28,6 +28,7 @@ import com.syed.cgpacalculator.ui.theme.TrackerPrimary
 fun OnboardingScreen(
     onComplete: (String, String) -> Unit,
     onBack: (() -> Unit)? = null,
+    onViewPrivacyPolicy: () -> Unit = {},
     initialName: String = "",
     initialDept: String = "Computer Science"
 ) {
@@ -151,6 +152,22 @@ fun OnboardingScreen(
                             onComplete(name, department)
                         }
                     }
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                TextButton(onClick = onViewPrivacyPolicy) {
+                    Text("Privacy Policy", color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Developed by Syed Ameen Gillani",
+                    color = Color.White.copy(alpha = 0.5f),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Light,
+                     modifier = Modifier.padding(bottom = 16.dp)
                 )
             }
         }

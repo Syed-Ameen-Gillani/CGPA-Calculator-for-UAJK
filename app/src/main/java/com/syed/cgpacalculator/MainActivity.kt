@@ -73,6 +73,14 @@ fun AppNavigation() {
                 onBack = if (navController.previousBackStackEntry != null) {
                     { navController.popBackStack() }
                 } else null,
+                onViewPrivacyPolicy = {
+                    context.startActivity(
+                        android.content.Intent(
+                            android.content.Intent.ACTION_VIEW,
+                            android.net.Uri.parse("https://syed-ameen-gillani.github.io/CGPA-Calculator-for-UAJK/privacy-policy.html")
+                        )
+                    )
+                },
                 initialName = profile.value.name,
                 initialDept = profile.value.department
             )
@@ -96,7 +104,12 @@ fun AppNavigation() {
                     navController.navigate("${Screen.Conversion.route}?gpaMode=$gpaMode")
                 },
                 onViewPrivacyPolicy = {
-                    navController.navigate(Screen.PrivacyPolicy.route)
+                    context.startActivity(
+                        android.content.Intent(
+                            android.content.Intent.ACTION_VIEW,
+                            android.net.Uri.parse("https://syed-ameen-gillani.github.io/CGPA-Calculator-for-UAJK/privacy-policy.html")
+                        )
+                    )
                 }
             )
         }
