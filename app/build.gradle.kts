@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cgpaclaculator"
+    namespace = "com.syed.cgpacalculator"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.cgpaclaculator"
+        applicationId = "com.syed.cgpacalculator"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -73,4 +73,5 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.2")
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.android.gms:play-services-ads:23.0.0")
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CGPA Calculator</string>
+    <string name="app_name">CGPA calculator for UAJK</string>
     <string name="title_activity_gpa">Gpa</string>
     <string name="title_activity_cgpa">CGpa</string>
     <string name="title_activity_new">newActivity</string>
