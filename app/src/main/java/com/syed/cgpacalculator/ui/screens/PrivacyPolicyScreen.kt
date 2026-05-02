@@ -19,7 +19,7 @@ import com.syed.cgpacalculator.ui.theme.TrackerPrimary
 @Composable
 fun PrivacyPolicyScreen(
     onBack: () -> Unit,
-    url: String = "https://syed-ameen-gillani.github.io/CGPA-Calculator-for-UAJK/privacy-policy.html"
+    url: String = "https://syed-ameen-gillani.github.io/CGPA-Calculator-for-UAJK/privacy-policy"
 ) {
     Scaffold(
         topBar = {
